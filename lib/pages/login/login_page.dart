@@ -116,36 +116,54 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Recuperar contraseña'),
+          backgroundColor: AppTheme.surface,
+          shape: const RoundedRectangleBorder(
+            borderRadius: AppTheme.borderRadiusCard,
+          ),
+          title: Text('Recuperar contraseña', style: AppTheme.titleMedium),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Introduce tu correo electrónico y te enviaremos un enlace para restablecer la contraseña.',
+                  style: AppTheme.bodySmall.copyWith(
+                    color: AppTheme.textMuted,
+                    height: AppTheme.lineHeightInfo,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppTheme.spacing16),
                 TextField(
                   controller: _resetEmailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  style: AppTheme.fieldTextStyle,
+                  decoration: AppTheme.inputDecoration(
                     labelText: 'Correo electrónico',
-                    hintText: 'ejemplo@correo.com',
-                  ),
+                  ).copyWith(hintText: 'ejemplo@correo.com'),
                 ),
               ],
             ),
           ),
+          actionsPadding: AppTheme.dialogActionsPadding,
           actions: [
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: AppTheme.textSecondary,
+              ),
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancelar'),
+              child: Text('Cancelar', style: AppTheme.labelMedium),
             ),
             ElevatedButton(
+              style: AppTheme.accentButtonStyle,
               onPressed: () {
-                Navigator.of(dialogContext).pop(_resetEmailController.text.trim());
+                Navigator.of(
+                  dialogContext,
+                ).pop(_resetEmailController.text.trim());
               },
-              child: const Text('Enviar'),
+              child: Text(
+                'Enviar',
+                style: AppTheme.buttonTextStyle.copyWith(color: AppTheme.white),
+              ),
             ),
           ],
         );
@@ -197,7 +215,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       scaffoldMessenger.hideCurrentSnackBar();
       scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: Text(error ?? 'No se pudo enviar el correo de recuperación.'),
+          content: Text(
+            error ?? 'No se pudo enviar el correo de recuperación.',
+          ),
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 4),
         ),
@@ -208,8 +228,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget _buildGoogleLogo() {
     return Image.asset(
       'assets/icons/google_logo.png',
-      width: 20,
-      height: 20,
+      width: AppTheme.authLogoSize,
+      height: AppTheme.authLogoSize,
       fit: BoxFit.contain,
     );
   }
@@ -217,224 +237,218 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
-    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.pearlWhite,
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
-        backgroundColor: AppTheme.deepNavy,
-        title: const Text('OceanRent'),
+        title: const Text('Ocean Rent'),
         actions: [
           const Icon(Icons.directions_boat_outlined),
-          const SizedBox(width: 20),
+          const SizedBox(width: AppTheme.spacing20),
         ],
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-                  decoration: BoxDecoration(
-                    color: AppTheme.pearlWhite,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Iniciar sesión',
-                        textAlign: TextAlign.center,
-                        style: textTheme.headlineMedium?.copyWith(
-                          fontSize: 20,
-                          color: Colors.black,
-                        ),
-                      ),
-
-                      const SizedBox(height: 28),
-
-                      buildLabelTextFields(context, 'Correo Electrónico'),
-                      const SizedBox(height: 8),
-                      CustomTextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        hintText: '',
-                        obscureText: false,
-                      ),
-
-                      const SizedBox(height: 22),
-
-                      buildLabelTextFields(context, 'Contraseña'),
-                      const SizedBox(height: 8),
-                      CustomTextField(
-                        controller: _passwordController,
-                        obscureText: !_showPassword,
-                        hintText: '',
-                        onSubmitted: (_) => _login(),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() => _showPassword = !_showPassword);
-                          },
-                          icon: Icon(
-                            _showPassword
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            color: AppTheme.deepNavy,
+            padding: AppTheme.responsiveScreenPadding(context),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: AppTheme.maxContentWidth(context),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    padding: AppTheme.authFormCardPadding,
+                    decoration: AppTheme.simpleCardDecoration(
+                      color: AppTheme.background,
+                      radius: AppTheme.radiusMd,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Iniciar sesión',
+                          textAlign: TextAlign.center,
+                          style: AppTheme.headlineMedium.copyWith(
+                            color: AppTheme.black,
+                            fontSize: AppTheme.responsiveFontSize(
+                              context,
+                              AppTheme.fontSize20,
+                            ),
                           ),
                         ),
-                      ),
 
-                      const SizedBox(height: 18),
+                        const SizedBox(height: AppTheme.spacing28),
+                        buildLabelTextFields(context, 'Correo Electrónico'),
+                        const SizedBox(height: AppTheme.spacing8),
+                        CustomTextField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          hintText: '',
+                          obscureText: false,
+                        ),
 
-                      SizedBox(
-                        height: 46,
-                        child: ElevatedButton(
-                          onPressed: authState.isLoading ? null : _login,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.oceanBlue,
-                            foregroundColor: Colors.white,
+                        const SizedBox(height: AppTheme.spacing22),
+                        buildLabelTextFields(context, 'Contraseña'),
+                        const SizedBox(height: AppTheme.spacing8),
+                        CustomTextField(
+                          controller: _passwordController,
+                          obscureText: !_showPassword,
+                          hintText: '',
+                          onSubmitted: (_) => _login(),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() => _showPassword = !_showPassword);
+                            },
+                            icon: Icon(
+                              _showPassword
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: AppTheme.deepNavy,
+                            ),
                           ),
-                          child: authState.isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
+                        ),
+
+                        const SizedBox(height: AppTheme.spacing18),
+
+                        SizedBox(
+                          height: AppTheme.authButtonHeight,
+                          child: ElevatedButton(
+                            onPressed: authState.isLoading ? null : _login,
+                            style: AppTheme.accentButtonStyle,
+                            child: authState.isLoading
+                                ? const SizedBox(
+                                    width: AppTheme.loadingSize,
+                                    height: AppTheme.loadingSize,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: AppTheme.borderWidthThin * 2,
+                                      color: AppTheme.white,
+                                    ),
+                                  )
+                                : Text(
+                                    'Entrar',
+                                    style: AppTheme.buttonTextStyle.copyWith(
+                                      color: AppTheme.white,
+                                    ),
                                   ),
-                                )
-                              : Text(
-                                  'Entrar',
-                                  style: textTheme.bodyLarge?.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
+                          ),
+                        ),
+
+                        const SizedBox(height: AppTheme.spacing10),
+
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton(
+                            onPressed: authState.isLoading
+                                ? null
+                                : _showResetPasswordDialog,
+                            style: AppTheme.compactTextButtonStyle,
+                            child: Text(
+                              '¿Has olvidado tu contraseña?',
+                              style: AppTheme.bodySmall.copyWith(
+                                color: AppTheme.oceanBlue,
+                                fontSize: AppTheme.fontSize12,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: AppTheme.spacing14),
+                        Row(
+                          children: [
+                            const Expanded(
+                              child: Divider(
+                                color: AppTheme.dividerStrong,
+                                thickness: AppTheme.borderWidthThin,
+                              ),
+                            ),
+                            Padding(
+                              padding: AppTheme.dividerLabelPadding,
+                              child: Text(
+                                'o',
+                                style: AppTheme.bodySmall.copyWith(
+                                  color: AppTheme.textSecondary,
+                                  fontSize: AppTheme.fontSize13,
+                                ),
+                              ),
+                            ),
+                            const Expanded(
+                              child: Divider(
+                                color: AppTheme.dividerStrong,
+                                thickness: AppTheme.borderWidthThin,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: AppTheme.spacing18),
+
+                        SizedBox(
+                          height: AppTheme.socialButtonHeight,
+                          child: OutlinedButton(
+                            onPressed: authState.isLoading
+                                ? null
+                                : _loginWithGoogle,
+                            style: AppTheme.socialOutlinedButtonStyle,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildGoogleLogo(),
+                                const SizedBox(width: AppTheme.spacing10),
+                                Text(
+                                  'Continuar con Google',
+                                  style: AppTheme.bodyMedium.copyWith(
+                                    color: AppTheme.black87,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: AppTheme.fontSize14,
                                   ),
                                 ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
 
-                      const SizedBox(height: 10),
+                        const SizedBox(height: AppTheme.spacing18),
 
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: TextButton(
+                        TextButton(
                           onPressed: authState.isLoading
                               ? null
-                              : _showResetPasswordDialog,
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 0),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
+                              : () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const RegisterPage(),
+                                    ),
+                                  );
+                                },
                           child: Text(
-                            '¿Has olvidado tu contraseña?',
-                            style: textTheme.bodySmall?.copyWith(
+                            '¿No tienes cuenta? Regístrate',
+                            style: AppTheme.bodyMedium.copyWith(
                               color: AppTheme.oceanBlue,
-                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              fontSize: AppTheme.fontSize14,
                               decoration: TextDecoration.underline,
                             ),
                           ),
                         ),
-                      ),
 
-                      const SizedBox(height: 14),
-
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Divider(color: Colors.grey[400], thickness: 1),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Text(
-                              'o',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
-                                fontSize: 13,
-                              ),
+                        if (authState.errorMessage != null) ...[
+                          const SizedBox(height: AppTheme.spacing12),
+                          Text(
+                            authState.errorMessage!,
+                            textAlign: TextAlign.center,
+                            style: AppTheme.bodySmall.copyWith(
+                              color: AppTheme.alertRed,
+                              fontSize: AppTheme.fontSize13,
                             ),
-                          ),
-                          Expanded(
-                            child: Divider(color: Colors.grey[400], thickness: 1),
                           ),
                         ],
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      SizedBox(
-                        height: 48,
-                        child: OutlinedButton(
-                          onPressed: authState.isLoading ? null : _loginWithGoogle,
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: AppTheme.deepNavy,
-                            side: BorderSide(color: Colors.grey.shade300),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _buildGoogleLogo(),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Continuar con Google',
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      TextButton(
-                        onPressed: authState.isLoading
-                            ? null
-                            : () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const RegisterPage(),
-                                  ),
-                                );
-                              },
-                        child: Text(
-                          '¿No tienes cuenta? Regístrate',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.oceanBlue,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-
-                      if (authState.errorMessage != null) ...[
-                        const SizedBox(height: 12),
-                        Text(
-                          authState.errorMessage!,
-                          textAlign: TextAlign.center,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: AppTheme.alertRed,
-                            fontSize: 13,
-                          ),
-                        ),
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -442,4 +456,3 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
   }
 }
-

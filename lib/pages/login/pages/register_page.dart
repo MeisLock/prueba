@@ -189,8 +189,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Widget _buildGoogleLogo() {
     return Image.asset(
       'assets/icons/google_logo.png',
-      width: 20,
-      height: 20,
+      width: AppTheme.authLogoSize,
+      height: AppTheme.authLogoSize,
       fit: BoxFit.contain,
     );
   }
@@ -198,258 +198,262 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
-    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.pearlWhite,
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
-        backgroundColor: AppTheme.deepNavy,
         title: const Text('Ocean Rent'),
         actions: [
           const Icon(Icons.directions_boat_outlined),
-          const SizedBox(width: 20),
+          const SizedBox(width: AppTheme.spacing20),
         ],
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 18),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-                  decoration: BoxDecoration(
-                    color: AppTheme.pearlWhite,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Registro',
-                        textAlign: TextAlign.center,
-                        style: textTheme.headlineMedium?.copyWith(
-                          fontSize: 20,
-                          color: Colors.black,
+            padding: AppTheme.responsiveScreenPadding(context),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: AppTheme.maxContentWidth(context),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: AppTheme.spacing18),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppTheme.spacing24,
+                      AppTheme.spacing28,
+                      AppTheme.spacing24,
+                      AppTheme.spacing24,
+                    ),
+                    decoration: AppTheme.simpleCardDecoration(
+                      color: AppTheme.background,
+                      radius: AppTheme.radiusMd,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Registro',
+                          textAlign: TextAlign.center,
+                          style: AppTheme.headlineMedium.copyWith(
+                            color: AppTheme.black,
+                            fontSize: AppTheme.responsiveFontSize(
+                              context,
+                              AppTheme.fontSize20,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 28),
-                      buildLabelTextFields(context, 'Nombre'),
-                      const SizedBox(height: 8),
-                      CustomTextField(
-                        controller: _nameController,
-                        hintText: '',
-                        obscureText: false,
-                      ),
-                      const SizedBox(height: 22),
-                      buildLabelTextFields(context, 'Apellidos'),
-                      const SizedBox(height: 8),
-                      CustomTextField(
-                        controller: _surnameController,
-                        hintText: '',
-                        obscureText: false,
-                      ),
-                      const SizedBox(height: 22),
-                      buildLabelTextFields(context, 'Fecha de nacimiento'),
-                      const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: _selectBirthDate,
-                        child: AbsorbPointer(
-                          child: CustomTextField(
-                            controller: _birthDateController,
-                            hintText: 'dd/mm/aaaa',
-                            obscureText: false,
-                            suffixIcon: IconButton(
-                              onPressed: _selectBirthDate,
-                              icon: const Icon(
-                                Icons.calendar_month_outlined,
-                                color: AppTheme.deepNavy,
+                        const SizedBox(height: AppTheme.spacing28),
+                        buildLabelTextFields(context, 'Nombre'),
+                        const SizedBox(height: AppTheme.spacing8),
+                        CustomTextField(
+                          controller: _nameController,
+                          hintText: '',
+                          obscureText: false,
+                        ),
+                        const SizedBox(height: AppTheme.spacing22),
+                        buildLabelTextFields(context, 'Apellidos'),
+                        const SizedBox(height: AppTheme.spacing8),
+                        CustomTextField(
+                          controller: _surnameController,
+                          hintText: '',
+                          obscureText: false,
+                        ),
+                        const SizedBox(height: AppTheme.spacing22),
+                        buildLabelTextFields(context, 'Fecha de nacimiento'),
+                        const SizedBox(height: AppTheme.spacing8),
+                        GestureDetector(
+                          onTap: _selectBirthDate,
+                          child: AbsorbPointer(
+                            child: CustomTextField(
+                              controller: _birthDateController,
+                              hintText: 'dd/mm/aaaa',
+                              obscureText: false,
+                              suffixIcon: IconButton(
+                                onPressed: _selectBirthDate,
+                                icon: const Icon(
+                                  Icons.calendar_month_outlined,
+                                  color: AppTheme.deepNavy,
+                                  size: AppTheme.iconSizeLarge,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
 
-                      const SizedBox(height: 22),
+                        const SizedBox(height: AppTheme.spacing22),
 
-                      buildLabelTextFields(context, 'Correo electrónico'),
-                      const SizedBox(height: 8),
-                      CustomTextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        hintText: '',
-                        obscureText: false,
-                      ),
-                      const SizedBox(height: 22),
-                      buildLabelTextFields(context, 'Contraseña'),
-                      const SizedBox(height: 8),
-                      CustomTextField(
-                        controller: _passwordController,
-                        obscureText: !_showPassword,
-                        hintText: '',
-                        suffixIcon: IconButton(
-                          onPressed: () =>
-                              setState(() => _showPassword = !_showPassword),
-                          icon: Icon(
-                            _showPassword
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            color: AppTheme.deepNavy,
+                        buildLabelTextFields(context, 'Correo electrónico'),
+                        const SizedBox(height: AppTheme.spacing8),
+                        CustomTextField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          hintText: '',
+                          obscureText: false,
+                        ),
+                        const SizedBox(height: AppTheme.spacing22),
+                        buildLabelTextFields(context, 'Contraseña'),
+                        const SizedBox(height: AppTheme.spacing8),
+                        CustomTextField(
+                          controller: _passwordController,
+                          obscureText: !_showPassword,
+                          hintText: '',
+                          suffixIcon: IconButton(
+                            onPressed: () =>
+                                setState(() => _showPassword = !_showPassword),
+                            icon: Icon(
+                              _showPassword
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: AppTheme.deepNavy,
+                              size: AppTheme.iconSizeLarge,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 22),
-                      buildLabelTextFields(context, 'Confirmar contraseña'),
-                      const SizedBox(height: 8),
-                      CustomTextField(
-                        controller: _confirmPasswordController,
-                        obscureText: !_showConfirmPassword,
-                        hintText: '',
-                        onSubmitted: (_) => _register(),
-                        suffixIcon: IconButton(
-                          onPressed: () => setState(
-                            () => _showConfirmPassword = !_showConfirmPassword,
-                          ),
-                          icon: Icon(
-                            _showConfirmPassword
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            color: AppTheme.deepNavy,
+                        const SizedBox(height: AppTheme.spacing22),
+                        buildLabelTextFields(context, 'Confirmar contraseña'),
+                        const SizedBox(height: AppTheme.spacing8),
+                        CustomTextField(
+                          controller: _confirmPasswordController,
+                          obscureText: !_showConfirmPassword,
+                          hintText: '',
+                          onSubmitted: (_) => _register(),
+                          suffixIcon: IconButton(
+                            onPressed: () => setState(
+                              () =>
+                                  _showConfirmPassword = !_showConfirmPassword,
+                            ),
+                            icon: Icon(
+                              _showConfirmPassword
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: AppTheme.deepNavy,
+                              size: AppTheme.iconSizeLarge,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                      SizedBox(
-                        height: 46,
-                        child: ElevatedButton(
-                          onPressed: authState.isLoading ? null : _register,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.oceanBlue,
-                            foregroundColor: Colors.white,
-                          ),
-                          child: authState.isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
+                        const SizedBox(height: AppTheme.spacing30),
+                        SizedBox(
+                          height: AppTheme.authButtonHeight,
+                          child: ElevatedButton(
+                            onPressed: authState.isLoading ? null : _register,
+                            style: AppTheme.accentButtonStyle,
+                            child: authState.isLoading
+                                ? const SizedBox(
+                                    width: AppTheme.loadingSize,
+                                    height: AppTheme.loadingSize,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: AppTheme.borderWidthThin * 2,
+                                      color: AppTheme.white,
+                                    ),
+                                  )
+                                : Text(
+                                    'Registrarse',
+                                    style: AppTheme.buttonTextStyle.copyWith(
+                                      color: AppTheme.white,
+                                    ),
                                   ),
-                                )
-                              : Text(
-                                  'Registrarse',
-                                  style: textTheme.bodyLarge?.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
+                          ),
+                        ),
+
+                        const SizedBox(height: AppTheme.spacing18),
+
+                        Row(
+                          children: [
+                            const Expanded(
+                              child: Divider(
+                                color: AppTheme.dividerStrong,
+                                thickness: AppTheme.borderWidthThin,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppTheme.spacing10,
+                              ),
+                              child: Text(
+                                'o',
+                                style: AppTheme.bodySmall.copyWith(
+                                  color: AppTheme.textSecondary,
+                                  fontSize: AppTheme.fontSize13,
+                                ),
+                              ),
+                            ),
+                            const Expanded(
+                              child: Divider(
+                                color: AppTheme.dividerStrong,
+                                thickness: AppTheme.borderWidthThin,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: AppTheme.spacing18),
+
+                        SizedBox(
+                          height: AppTheme.socialButtonHeight,
+                          child: OutlinedButton(
+                            onPressed: authState.isLoading
+                                ? null
+                                : _registerWithGoogle,
+                            style: AppTheme.socialOutlinedButtonStyle,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildGoogleLogo(),
+                                const SizedBox(width: AppTheme.spacing10),
+                                Text(
+                                  'Registrarse con Google',
+                                  style: AppTheme.bodyMedium.copyWith(
+                                    color: AppTheme.black87,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: AppTheme.fontSize14,
                                   ),
                                 ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
 
-                      const SizedBox(height: 18),
-
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: Colors.grey[400],
-                              thickness: 1,
+                        const SizedBox(height: AppTheme.spacing16),
+                        TextButton(
+                          onPressed: authState.isLoading
+                              ? null
+                              : () {
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (_) => const LoginPage(),
+                                    ),
+                                    (_) => false,
+                                  );
+                                },
+                          child: Text(
+                            '¿Ya tienes cuenta? Inicia sesión',
+                            style: AppTheme.bodyMedium.copyWith(
+                              color: AppTheme.oceanBlue,
+                              fontWeight: FontWeight.w600,
+                              fontSize: AppTheme.fontSize14,
+                              decoration: TextDecoration.underline,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Text(
-                              'o',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Colors.grey[400],
-                              thickness: 1,
+                        ),
+                        if (authState.errorMessage != null) ...[
+                          const SizedBox(height: AppTheme.spacing16),
+                          Text(
+                            authState.errorMessage!,
+                            textAlign: TextAlign.center,
+                            style: AppTheme.bodySmall.copyWith(
+                              color: AppTheme.alertRed,
+                              fontSize: AppTheme.fontSize13,
                             ),
                           ),
                         ],
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      SizedBox(
-                        height: 48,
-                        child: OutlinedButton(
-                          onPressed: authState.isLoading
-                              ? null
-                              : _registerWithGoogle,
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: AppTheme.deepNavy,
-                            side: BorderSide(color: Colors.grey.shade300),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _buildGoogleLogo(),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Registrarse con Google',
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: authState.isLoading
-                            ? null
-                            : () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder: (_) => const LoginPage(),
-                                  ),
-                                  (_) => false,
-                                );
-                              },
-                        child: Text(
-                          '¿Ya tienes cuenta? Inicia sesión',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.oceanBlue,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                      if (authState.errorMessage != null) ...[
-                        const SizedBox(height: 16),
-                        Text(
-                          authState.errorMessage!,
-                          textAlign: TextAlign.center,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: AppTheme.alertRed,
-                            fontSize: 13,
-                          ),
-                        ),
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

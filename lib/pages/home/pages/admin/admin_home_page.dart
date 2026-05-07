@@ -23,17 +23,35 @@ class AdminHomePage extends ConsumerWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: Colors.white,
-        title: const Text('Eliminar barco'),
-        content: Text('¿Seguro que quieres eliminar "${boat.name}"?'),
+        backgroundColor: AppTheme.surface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: AppTheme.borderRadiusCard,
+        ),
+        title: Text('Eliminar barco', style: AppTheme.titleMedium),
+        content: Text(
+          '¿Seguro que quieres eliminar "${boat.name}"?',
+          style: AppTheme.bodySmall.copyWith(
+            color: AppTheme.textMuted,
+            height: AppTheme.lineHeightInfo,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancelar', style: TextStyle(color: AppTheme.deepNavy)),
+            child: Text(
+              'Cancelar',
+              style: AppTheme.labelMedium.copyWith(color: AppTheme.deepNavy),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('Eliminar', style: TextStyle(color: AppTheme.alertRed)),
+            child: Text(
+              'Eliminar',
+              style: AppTheme.labelMedium.copyWith(
+                color: AppTheme.alertRed,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
@@ -64,6 +82,7 @@ class AdminHomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: const Text('Panel Admin - Barcos'),
         actions: [
@@ -74,38 +93,51 @@ class AdminHomePage extends ConsumerWidget {
                 MaterialPageRoute(builder: (_) => const AdminProfileScreen()),
               );
             },
-            icon: const Icon(Icons.person_outline),
+            icon: const Icon(
+              Icons.person_outline,
+              size: AppTheme.iconSizeLarge,
+            ),
           ),
           IconButton(
             tooltip: 'Cerrar sesión',
             onPressed: () => _logout(context, ref),
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, size: AppTheme.iconSizeLarge),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppTheme.deepNavy,
-        foregroundColor: Colors.white,
+        foregroundColor: AppTheme.white,
         onPressed: () async {
           await Navigator.of(
             context,
           ).push(MaterialPageRoute(builder: (_) => const BoatFormPage()));
         },
-        icon: const Icon(Icons.add),
-        label: const Text('Nuevo Barco'),
+        icon: const Icon(Icons.add, size: AppTheme.iconSizeLarge),
+        label: Text(
+          'Nuevo Barco',
+          style: AppTheme.buttonTextStyle.copyWith(color: AppTheme.white),
+        ),
       ),
       body: ref
           .watch(boatsStreamProvider)
           .when(
-            loading: () => Center(
-              child: CircularProgressIndicator(color: AppTheme.deepNavy),
+            loading: () => const Center(
+              child: CircularProgressIndicator(
+                color: AppTheme.oceanBlue,
+                strokeWidth: AppTheme.borderWidthMedium,
+              ),
             ),
             error: (error, _) => Center(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: AppTheme.screenPadding,
                 child: Text(
                   'Error cargando el panel:\n$error',
                   textAlign: TextAlign.center,
+                  style: AppTheme.bodyLarge.copyWith(
+                    color: AppTheme.alertRed,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -146,33 +178,31 @@ class _AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 96),
+      padding: AppTheme.adminDashboardPadding,
       children: [
         _AdminHeader(totalBoats: boats.length),
-        const SizedBox(height: 20),
-
-        _SectionTitle(
+        const SizedBox(height: AppTheme.spacing20),
+        const _SectionTitle(
           title: 'Resumen de actividad',
           subtitle: 'Estado general del panel de administración.',
         ),
-        const SizedBox(height: 12),
-
+        const SizedBox(height: AppTheme.spacing12),
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.25,
+          mainAxisSpacing: AppTheme.spacing12,
+          crossAxisSpacing: AppTheme.spacing12,
+          childAspectRatio: AppTheme.adminSummaryAspectRatio,
           children: [
-            AdminSummaryCard(
+            const AdminSummaryCard(
               title: 'Reservas próximas',
               value: '0',
               subtitle: 'Pendiente de bookings',
               icon: Icons.calendar_month_outlined,
               color: AppTheme.oceanBlue,
             ),
-            AdminSummaryCard(
+            const AdminSummaryCard(
               title: 'Fianzas pendientes',
               value: '0 €',
               subtitle: 'Pendiente de Stripe',
@@ -186,7 +216,7 @@ class _AdminDashboard extends StatelessWidget {
               icon: Icons.directions_boat_filled_outlined,
               color: AppTheme.deepNavy,
             ),
-            AdminSummaryCard(
+            const AdminSummaryCard(
               title: 'Titulaciones',
               value: '0',
               subtitle: 'Pendiente de users',
@@ -195,15 +225,12 @@ class _AdminDashboard extends StatelessWidget {
             ),
           ],
         ),
-
-        const SizedBox(height: 26),
-
-        _SectionTitle(
+        const SizedBox(height: AppTheme.spacing26),
+        const _SectionTitle(
           title: 'Accesos rápidos',
           subtitle: 'Acciones principales del administrador.',
         ),
-        const SizedBox(height: 12),
-
+        const SizedBox(height: AppTheme.spacing12),
         AdminQuickActionCard(
           title: 'Pedidos / reservas',
           subtitle: 'Consultar solicitudes de alquiler.',
@@ -217,8 +244,7 @@ class _AdminDashboard extends StatelessWidget {
             );
           },
         ),
-        const SizedBox(height: 12),
-
+        const SizedBox(height: AppTheme.spacing12),
         AdminQuickActionCard(
           title: 'Calendario',
           subtitle: 'Ver disponibilidad y bloqueos.',
@@ -230,8 +256,7 @@ class _AdminDashboard extends StatelessWidget {
             );
           },
         ),
-        const SizedBox(height: 12),
-
+        const SizedBox(height: AppTheme.spacing12),
         AdminQuickActionCard(
           title: 'Mantenimiento',
           subtitle: 'Bloquear fechas por revisión o avería.',
@@ -247,35 +272,36 @@ class _AdminDashboard extends StatelessWidget {
             );
           },
         ),
-
-        const SizedBox(height: 26),
-
-        _SectionTitle(
+        const SizedBox(height: AppTheme.spacing26),
+        const _SectionTitle(
           title: 'Pedidos recientes',
           subtitle: 'Preparado para conectarse con la colección bookings.',
         ),
-        const SizedBox(height: 12),
-
-        AdminEmptySection(
+        const SizedBox(height: AppTheme.spacing12),
+        const AdminEmptySection(
           icon: Icons.event_note_outlined,
           title: 'No hay reservas conectadas todavía',
           message:
               'Cuando se implemente bookings, aquí aparecerán los pedidos recientes.',
         ),
-
-        const SizedBox(height: 26),
-
+        const SizedBox(height: AppTheme.spacing26),
         _SectionTitle(
           title: 'Gestión de flota',
           subtitle: 'CRUD de barcos disponible desde el panel.',
           trailing: TextButton.icon(
             onPressed: onCreateBoat,
-            icon: const Icon(Icons.add),
-            label: const Text('Crear barco'),
+            style: AppTheme.compactTextButtonStyle,
+            icon: const Icon(Icons.add, size: AppTheme.iconSizeLarge),
+            label: Text(
+              'Crear barco',
+              style: AppTheme.labelMedium.copyWith(
+                color: AppTheme.oceanBlue,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 12),
-
+        const SizedBox(height: AppTheme.spacing12),
         if (boats.isEmpty)
           AdminEmptySection(
             icon: Icons.directions_boat_filled_outlined,
@@ -288,7 +314,7 @@ class _AdminDashboard extends StatelessWidget {
         else
           ...boats.map(
             (boat) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: AppTheme.cardBottomMargin,
               child: _BoatAdminCard(
                 boat: boat,
                 onEdit: () => onEditBoat(boat),
@@ -308,76 +334,65 @@ class _AdminHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppTheme.deepNavy,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.deepNavy.withValues(alpha: 0.18),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
+      padding: AppTheme.adminHeaderPadding,
+      decoration: AppTheme.adminHeaderDecoration(),
       child: Row(
         children: [
           Container(
-            width: 54,
-            height: 54,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(18),
-            ),
+            width: AppTheme.adminHeaderIconBoxSize,
+            height: AppTheme.adminHeaderIconBoxSize,
+            decoration: AppTheme.adminIconBoxDecoration(AppTheme.white),
             child: const Icon(
               Icons.admin_panel_settings_outlined,
-              color: Colors.white,
-              size: 30,
+              color: AppTheme.white,
+              size: AppTheme.iconSize3xl,
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: AppTheme.spacing14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Panel del Admin',
-                  style: textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontSize: 22,
+                  style: AppTheme.titleLarge.copyWith(
+                    color: AppTheme.white,
+                    fontSize: AppTheme.fontSize22,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppTheme.spacing4),
                 Text(
                   'Control de reservas, calendario, flota y titulaciones.',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.78),
-                    height: 1.35,
+                  style: AppTheme.bodySmall.copyWith(
+                    color: AppTheme.white.withValues(
+                      alpha: AppTheme.alphaTextMuted,
+                    ),
+                    height: AppTheme.lineHeightRegular,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppTheme.spacing10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 '$totalBoats',
-                style: textTheme.titleLarge?.copyWith(
+                style: AppTheme.titleLarge.copyWith(
                   color: AppTheme.sunsetGold,
-                  fontSize: 26,
+                  fontSize: AppTheme.fontSize26,
                   fontWeight: FontWeight.w800,
                 ),
               ),
               Text(
                 'barcos',
-                style: textTheme.bodySmall?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.75),
+                style: AppTheme.bodySmall.copyWith(
+                  color: AppTheme.white.withValues(
+                    alpha: AppTheme.alphaTextOnDark,
+                  ),
                 ),
               ),
             ],
@@ -401,8 +416,6 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -412,17 +425,17 @@ class _SectionTitle extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: textTheme.headlineSmall?.copyWith(
+                style: AppTheme.headlineSmall.copyWith(
                   color: AppTheme.deepNavy,
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppTheme.spacing4),
               Text(
                 subtitle,
-                style: textTheme.bodySmall?.copyWith(
-                  color: Colors.grey.shade600,
-                  height: 1.3,
+                style: AppTheme.bodySmall.copyWith(
+                  color: AppTheme.textMuted,
+                  height: AppTheme.lineHeightSmall,
                 ),
               ),
             ],
@@ -447,31 +460,26 @@ class _BoatAdminCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final imageUrl = boat.imageUrl.trim();
 
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppTheme.deepNavy.withValues(alpha: 0.08)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+      decoration: AppTheme.cardDecoration(
+        color: AppTheme.surface,
+        radius: AppTheme.radiusCard,
+        border: Border.all(
+          color: AppTheme.deepNavy.withValues(alpha: AppTheme.alphaSoft),
+        ),
+        boxShadow: AppTheme.softShadow(),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+            borderRadius: AppTheme.borderRadiusCardTop,
             child: imageUrl.isNotEmpty
                 ? Image.network(
                     imageUrl,
-                    height: 180,
+                    height: AppTheme.imageHeight,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) {
@@ -481,22 +489,22 @@ class _BoatAdminCard extends StatelessWidget {
                 : _BoatImagePlaceholder(name: boat.name),
           ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: AppTheme.compactCardPadding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   boat.name,
-                  style: textTheme.titleLarge?.copyWith(
+                  style: AppTheme.titleLarge.copyWith(
                     color: AppTheme.deepNavy,
-                    fontSize: 22,
+                    fontSize: AppTheme.fontSize22,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppTheme.spacing12),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: AppTheme.spacing8,
+                  runSpacing: AppTheme.spacing8,
                   children: [
                     _InfoChip(
                       icon: Icons.directions_boat_outlined,
@@ -512,50 +520,58 @@ class _BoatAdminCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: AppTheme.spacing14),
                 Text(
                   boat.description.trim().isEmpty
                       ? 'Sin descripción'
                       : boat.description,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey.shade800,
-                    height: 1.45,
+                  style: AppTheme.bodyMedium.copyWith(
+                    color: AppTheme.textMuted,
+                    height: AppTheme.lineHeightLarge,
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppTheme.spacing18),
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: onEdit,
-                        icon: const Icon(Icons.edit_outlined),
-                        label: const Text('Editar'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppTheme.deepNavy,
-                          side: BorderSide(
-                            color: AppTheme.deepNavy.withValues(alpha: 0.25),
+                        style: AppTheme.outlinedButtonStyle.copyWith(
+                          minimumSize: const WidgetStatePropertyAll(
+                            Size.fromHeight(AppTheme.compactButtonHeight),
                           ),
-                          minimumSize: const Size.fromHeight(48),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                        ),
+                        icon: const Icon(
+                          Icons.edit_outlined,
+                          size: AppTheme.iconSizeLarge,
+                        ),
+                        label: Text(
+                          'Editar',
+                          style: AppTheme.buttonTextStyle.copyWith(
+                            color: AppTheme.deepNavy,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppTheme.spacing12),
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: onDelete,
-                        icon: const Icon(Icons.delete_outline),
-                        label: const Text('Eliminar'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.alertRed,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size.fromHeight(48),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                        style: AppTheme.destructiveButtonStyle.copyWith(
+                          minimumSize: const WidgetStatePropertyAll(
+                            Size.fromHeight(AppTheme.compactButtonHeight),
+                          ),
+                        ),
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          size: AppTheme.iconSizeLarge,
+                        ),
+                        label: Text(
+                          'Eliminar',
+                          style: AppTheme.buttonTextStyle.copyWith(
+                            color: AppTheme.white,
                           ),
                         ),
                       ),
@@ -598,22 +614,22 @@ class _BoatImagePlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 180,
+      height: AppTheme.imageHeight,
       width: double.infinity,
-      color: AppTheme.deepNavy.withValues(alpha: 0.08),
+      color: AppTheme.deepNavy.withValues(alpha: AppTheme.alphaSoft),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.directions_boat_filled_outlined,
-            size: 48,
+            size: AppTheme.placeholderIconSize,
             color: AppTheme.deepNavy,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppTheme.spacing10),
           Text(
             name,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            style: AppTheme.bodyLarge.copyWith(
               color: AppTheme.deepNavy,
               fontWeight: FontWeight.w600,
             ),
@@ -633,20 +649,19 @@ class _InfoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: AppTheme.oceanBlue.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppTheme.oceanBlue.withValues(alpha: 0.25)),
+      padding: AppTheme.chipPadding,
+      decoration: AppTheme.badgeDecoration(
+        color: AppTheme.oceanBlue,
+        alpha: AppTheme.alphaLight,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 18, color: AppTheme.deepNavy),
-          const SizedBox(width: 6),
+          Icon(icon, size: AppTheme.iconSizeMedium, color: AppTheme.deepNavy),
+          const SizedBox(width: AppTheme.spacing6),
           Text(
             label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            style: AppTheme.bodySmall.copyWith(
               color: AppTheme.deepNavy,
               fontWeight: FontWeight.w600,
             ),

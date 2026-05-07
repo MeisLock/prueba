@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ocean_rent/core/theme/app_theme.dart';
 import 'package:ocean_rent/models/user_model.dart';
 import 'package:ocean_rent/providers/auth_providers.dart';
 import 'package:ocean_rent/providers/user_providers.dart';
 
-// ─────────────────────────────────────────────
-//  SCREEN DE PERFIL DEL ADMINISTRADOR
-// ─────────────────────────────────────────────
+// Decoración de campos de texto
+
+InputDecoration _fieldDeco({
+  required String label,
+  required IconData icon,
+  bool readOnly = false,
+}) {
+  return AppTheme.inputDecoration(
+    labelText: label,
+    icon: icon,
+    readOnly: readOnly,
+  ).copyWith(
+    errorStyle: AppTheme.helperTextStyle.copyWith(color: AppTheme.error),
+  );
+}
+
+// Screen principal
 
 class AdminProfileScreen extends ConsumerStatefulWidget {
   const AdminProfileScreen({super.key});
 
-  /// Navega a esta pantalla desde cualquier contexto.
   static void navigate(BuildContext context) {
     Navigator.of(
       context,
@@ -25,29 +39,27 @@ class AdminProfileScreen extends ConsumerStatefulWidget {
 class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
+  final _nameCtrl = TextEditingController();
+  final _surnameCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
 
-  late TextEditingController _nameCtrl;
-  late TextEditingController _surnameCtrl;
-  late TextEditingController _emailCtrl;
   UserModel? _profile;
   bool _isLoading = true;
   bool _isSaving = false;
 
-  late AnimationController _fadeController;
-  late Animation<double> _fadeAnim;
+  late final AnimationController _fadeCtrl = AnimationController(
+    vsync: this,
+    duration: AppTheme.fadeDuration,
+  );
+
+  late final Animation<double> _fadeAnim = CurvedAnimation(
+    parent: _fadeCtrl,
+    curve: Curves.easeOut,
+  );
 
   @override
   void initState() {
     super.initState();
-    _nameCtrl = TextEditingController();
-    _surnameCtrl = TextEditingController();
-    _emailCtrl = TextEditingController();
-    _fadeController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    _fadeAnim = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
-
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadProfile());
   }
 
@@ -56,34 +68,32 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen>
     _nameCtrl.dispose();
     _surnameCtrl.dispose();
     _emailCtrl.dispose();
-    _fadeController.dispose();
+    _fadeCtrl.dispose();
     super.dispose();
   }
 
-  // ── Carga del perfil ──────────────────────────────────────────────────────
+  // Lógica
 
   Future<void> _loadProfile() async {
-    final authNotifier = ref.read(authNotifierProvider);
+    final auth = ref.read(authNotifierProvider);
 
-    if (authNotifier.currentUser == null) {
-      await authNotifier.checkCurrentSession();
+    if (auth.currentUser == null) {
+      await auth.checkCurrentSession();
     }
 
     final uid = ref.read(authNotifierProvider).currentUser?.uid;
 
     if (uid == null) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        _showSnack('No se pudo obtener el usuario', isError: true);
-      }
+      if (mounted) setState(() => _isLoading = false);
+      _snack('No se pudo obtener el usuario', error: true);
       return;
     }
 
     try {
-      final repo = ref.read(userRepositoryProvider);
-      final profile = await repo.getUser(uid);
+      final profile = await ref.read(userRepositoryProvider).getUser(uid);
 
       if (!mounted) return;
+
       setState(() {
         _profile = profile;
         _nameCtrl.text = profile.name;
@@ -91,90 +101,110 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen>
         _emailCtrl.text = profile.email;
         _isLoading = false;
       });
-      _fadeController.forward();
+
+      _fadeCtrl.forward();
     } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        _showSnack('Error al cargar el perfil: $e', isError: true);
-      }
+      if (mounted) setState(() => _isLoading = false);
+      _snack('Error al cargar el perfil: $e', error: true);
     }
   }
 
-  // ── Guardar cambios ───────────────────────────────────────────────────────
-
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
+
     setState(() => _isSaving = true);
 
     try {
       final uid = ref.read(authNotifierProvider).currentUser!.uid;
-      final repo = ref.read(userRepositoryProvider);
 
-      await repo.updateProfile(
-        uid: uid,
-        name: _nameCtrl.text.trim(),
-        surname: _surnameCtrl.text.trim(),
-      );
-      if (mounted) {
-        _showSnack('Perfil actualizado correctamente', isError: false);
-      }
+      await ref.read(userRepositoryProvider).updateProfile(
+            uid: uid,
+            name: _nameCtrl.text.trim(),
+            surname: _surnameCtrl.text.trim(),
+          );
+
+      _snack('Perfil actualizado correctamente');
     } catch (e) {
-      if (mounted) _showSnack('Error al guardar el perfil: $e', isError: true);
+      _snack('Error al guardar el perfil: $e', error: true);
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
   }
 
-  // ── Snackbar helper ───────────────────────────────────────────────────────
+  void _snack(String msg, {bool error = false}) {
+    if (!mounted) return;
 
-  void _showSnack(String msg, {required bool isError}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg),
-        backgroundColor: isError
-            ? _OceanRentColors.error
-            : _OceanRentColors.success,
+        content: Text(
+          msg,
+          style: AppTheme.bodySmall.copyWith(color: AppTheme.white),
+        ),
+        backgroundColor: error ? AppTheme.error : AppTheme.success,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
+        shape: const RoundedRectangleBorder(
+          borderRadius: AppTheme.borderRadiusInput,
+        ),
+        margin: AppTheme.listPadding,
       ),
     );
   }
 
-  // ── Build principal ───────────────────────────────────────────────────────
+  // Build
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        backgroundColor: AppTheme.background,
+        body: Center(
+          child: CircularProgressIndicator(
+            color: AppTheme.oceanBlue,
+            strokeWidth: AppTheme.borderWidthMedium,
+          ),
+        ),
+      );
     }
 
     if (_profile == null) {
-      return const Scaffold(
-        body: Center(child: Text('No se pudo cargar el perfil')),
+      return Scaffold(
+        backgroundColor: AppTheme.background,
+        body: Center(
+          child: Text(
+            'No se pudo cargar el perfil',
+            style: AppTheme.bodyLarge.copyWith(
+              color: AppTheme.deepNavy,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       );
     }
 
     return Scaffold(
-      backgroundColor: _OceanRentColors.background,
-      appBar: _buildAppBar(),
+      backgroundColor: AppTheme.background,
+      appBar: _AdminAppBar(onBack: () => Navigator.of(context).maybePop()),
       body: FadeTransition(
         opacity: _fadeAnim,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          padding: AppTheme.responsiveScreenPadding(context),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildAvatarSection(),
-                const SizedBox(height: 32),
-                _sectionLabel('Datos Personales'),
-                const SizedBox(height: 16),
-                _buildPersonalDataCard(),
-                const SizedBox(height: 36),
-                _buildSaveButton(),
-                const SizedBox(height: 40),
+                _AvatarSection(profile: _profile!),
+                const SizedBox(height: AppTheme.spacing32),
+                const _SectionLabel('Datos Personales'),
+                const SizedBox(height: AppTheme.spacing16),
+                _PersonalDataCard(
+                  nameCtrl: _nameCtrl,
+                  surnameCtrl: _surnameCtrl,
+                  emailCtrl: _emailCtrl,
+                ),
+                const SizedBox(height: AppTheme.spacing36),
+                _SaveButton(isSaving: _isSaving, onPressed: _saveProfile),
+                const SizedBox(height: AppTheme.spacing24),
               ],
             ),
           ),
@@ -182,47 +212,57 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen>
       ),
     );
   }
+}
 
-  // ── AppBar ────────────────────────────────────────────────────────────────
+// AppBar
 
-  PreferredSizeWidget _buildAppBar() {
+class _AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _AdminAppBar({required this.onBack});
+
+  final VoidCallback onBack;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: _OceanRentColors.navy,
-      elevation: 0,
+      backgroundColor: AppTheme.deepNavy,
+      foregroundColor: AppTheme.white,
       centerTitle: true,
+      elevation: 0,
+      titleTextStyle: AppTheme.appBarTitleStyle,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-        color: Colors.white,
-        onPressed: () => Navigator.of(context).maybePop(),
-      ),
-      title: const Text(
-        'OceanRent',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-          fontSize: 18,
-          letterSpacing: 0.2,
+        icon: const Icon(
+          Icons.arrow_back_ios_new_rounded,
+          size: AppTheme.iconSizeLg,
+          color: AppTheme.white,
         ),
+        onPressed: onBack,
       ),
+      title: const Text('OceanRent'),
       actions: const [
-        Padding(
-          padding: EdgeInsets.only(right: 16),
-          child: Icon(
-            Icons.directions_boat_rounded,
-            color: Colors.white,
-            size: 24,
-          ),
+        Icon(
+          Icons.directions_boat_rounded,
+          size: AppTheme.iconSizeLarge,
+          color: AppTheme.white,
         ),
+        SizedBox(width: AppTheme.spacing16),
       ],
     );
   }
+}
 
-  // ── Avatar + nombre + badge admin ────────────────────────────────────────
+// Avatar
 
-  Widget _buildAvatarSection() {
-    final name = _profile!.name;
-    final surname = _profile!.surname;
-    final initials = '${name[0]}${surname[0]}'.toUpperCase();
+class _AvatarSection extends StatelessWidget {
+  const _AvatarSection({required this.profile});
+
+  final UserModel profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final initials = '${profile.name[0]}${profile.surname[0]}'.toUpperCase();
 
     return Center(
       child: Column(
@@ -230,30 +270,15 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen>
           Stack(
             children: [
               Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [_OceanRentColors.teal, _OceanRentColors.tealDark],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: _OceanRentColors.teal.withValues(alpha: 0.35),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
+                width: AppTheme.avatarSize,
+                height: AppTheme.avatarSize,
+                decoration: AppTheme.profileAvatarDecoration(),
                 child: Center(
                   child: Text(
                     initials,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w700,
+                    style: AppTheme.titleLarge.copyWith(
+                      color: AppTheme.white,
+                      fontSize: AppTheme.fontSize30,
                     ),
                   ),
                 ),
@@ -262,61 +287,42 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen>
                 bottom: 0,
                 right: 0,
                 child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: _OceanRentColors.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: _OceanRentColors.divider,
-                      width: 1.5,
-                    ),
-                  ),
-                  child: const Icon(
+                  width: AppTheme.avatarCameraSize,
+                  height: AppTheme.avatarCameraSize,
+                  decoration: AppTheme.profileCameraDecoration(),
+                  child: Icon(
                     Icons.camera_alt_rounded,
-                    size: 14,
-                    color: _OceanRentColors.textSecondary,
+                    size: AppTheme.iconSizeSmall,
+                    color: AppTheme.deepNavy.withValues(
+                      alpha: AppTheme.alphaDisabled,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppTheme.spacing12),
           Text(
-            '$name $surname',
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: _OceanRentColors.textPrimary,
-              letterSpacing: -0.4,
-            ),
+            '${profile.name} ${profile.surname}',
+            style: AppTheme.cardTitleStyle.copyWith(color: AppTheme.deepNavy),
           ),
-          const SizedBox(height: 4),
-          // Badge "Administrador" con color navy en lugar del teal del cliente
+          const SizedBox(height: AppTheme.spacing4),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-            decoration: BoxDecoration(
-              color: _OceanRentColors.navy.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: _OceanRentColors.navy.withValues(alpha: 0.25),
-              ),
-            ),
+            padding: AppTheme.profileBadgePadding,
+            decoration: AppTheme.badgeDecoration(color: AppTheme.deepNavy),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(
+              children: [
+                const Icon(
                   Icons.shield_rounded,
-                  size: 12,
-                  color: _OceanRentColors.navy,
+                  size: AppTheme.iconSizeMini,
+                  color: AppTheme.deepNavy,
                 ),
-                SizedBox(width: 4),
+                const SizedBox(width: AppTheme.spacing4),
                 Text(
-                  'administrador',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: _OceanRentColors.navy,
-                    fontWeight: FontWeight.w600,
+                  'Administrador',
+                  style: AppTheme.badgeTextStyle.copyWith(
+                    color: AppTheme.deepNavy,
                   ),
                 ),
               ],
@@ -326,43 +332,82 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen>
       ),
     );
   }
+}
 
-  // ── Etiqueta de sección ───────────────────────────────────────────────────
+// Section label
 
-  Widget _sectionLabel(String text) => Text(
-    text,
-    style: const TextStyle(
-      fontSize: 13,
-      fontWeight: FontWeight.w700,
-      color: _OceanRentColors.textSecondary,
-      letterSpacing: 0.8,
-    ),
-  );
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text);
 
-  // ── Tarjeta de datos personales ───────────────────────────────────────────
+  final String text;
 
-  Widget _buildPersonalDataCard() {
-    return _Card(
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: AppTheme.sectionLabelStyle.copyWith(
+        color: AppTheme.deepNavy.withValues(alpha: AppTheme.alphaDisabled),
+      ),
+    );
+  }
+}
+
+// Card contenedor
+
+class _ProfileCard extends StatelessWidget {
+  const _ProfileCard({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: AppTheme.cardPadding,
+      decoration: AppTheme.cardDecoration(color: AppTheme.surface),
+      child: child,
+    );
+  }
+}
+
+// Datos personales
+
+class _PersonalDataCard extends StatelessWidget {
+  const _PersonalDataCard({
+    required this.nameCtrl,
+    required this.surnameCtrl,
+    required this.emailCtrl,
+  });
+
+  final TextEditingController nameCtrl;
+  final TextEditingController surnameCtrl;
+  final TextEditingController emailCtrl;
+
+  static String? _required(String? v) {
+    return (v == null || v.trim().isEmpty) ? 'Campo requerido' : null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _ProfileCard(
       child: Column(
         children: [
-          _buildField(
-            controller: _nameCtrl,
+          _ProfileField(
+            controller: nameCtrl,
             label: 'Nombre',
             icon: Icons.person_outline_rounded,
-            validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
+            validator: _required,
           ),
-          const SizedBox(height: 20),
-          _buildField(
-            controller: _surnameCtrl,
+          const SizedBox(height: AppTheme.spacing20),
+          _ProfileField(
+            controller: surnameCtrl,
             label: 'Apellidos',
             icon: Icons.badge_outlined,
-            validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Campo requerido' : null,
+            validator: _required,
           ),
-          const SizedBox(height: 20),
-          _buildField(
-            controller: _emailCtrl,
+          const SizedBox(height: AppTheme.spacing20),
+          _ProfileField(
+            controller: emailCtrl,
             label: 'Correo Electrónico',
             icon: Icons.mail_outline_rounded,
             keyboardType: TextInputType.emailAddress,
@@ -377,151 +422,81 @@ class _AdminProfileScreenState extends ConsumerState<AdminProfileScreen>
       ),
     );
   }
+}
 
-  // ── Campo de texto reutilizable ───────────────────────────────────────────
+// Campo de texto
 
-  Widget _buildField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    bool readOnly = false,
-    String? Function(String?)? validator,
-  }) {
+class _ProfileField extends StatelessWidget {
+  const _ProfileField({
+    required this.controller,
+    required this.label,
+    required this.icon,
+    this.keyboardType = TextInputType.text,
+    this.readOnly = false,
+    this.validator,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final TextInputType keyboardType;
+  final bool readOnly;
+  final String? Function(String?)? validator;
+
+  @override
+  Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       readOnly: readOnly,
       validator: validator,
-      style: TextStyle(
-        fontSize: 15,
+      style: AppTheme.fieldTextStyle.copyWith(
         color: readOnly
-            ? _OceanRentColors.textSecondary
-            : _OceanRentColors.textPrimary,
-        fontWeight: FontWeight.w500,
+            ? AppTheme.deepNavy.withValues(alpha: AppTheme.alphaDisabled)
+            : AppTheme.deepNavy,
       ),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-          color: _OceanRentColors.textSecondary,
-          fontSize: 13,
-        ),
-        prefixIcon: Icon(icon, size: 18, color: _OceanRentColors.textSecondary),
-        filled: true,
-        fillColor: readOnly
-            ? _OceanRentColors.backgroundDim
-            : _OceanRentColors.surface,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: _OceanRentColors.fieldBorder),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: _OceanRentColors.fieldBorder),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: _OceanRentColors.teal,
-            width: 1.5,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: _OceanRentColors.error),
-        ),
-      ),
-    );
-  }
-
-  // ── Botón guardar ─────────────────────────────────────────────────────────
-
-  Widget _buildSaveButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: ElevatedButton(
-        onPressed: _isSaving ? null : _saveProfile,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _OceanRentColors.teal,
-          disabledBackgroundColor: _OceanRentColors.teal.withValues(alpha: 0.5),
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-        ),
-        child: _isSaving
-            ? const SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  color: Colors.white,
-                ),
-              )
-            : const Text(
-                'Guardar cambios',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.2,
-                ),
-              ),
-      ),
+      decoration: _fieldDeco(label: label, icon: icon, readOnly: readOnly),
     );
   }
 }
 
-// ─────────────────────────────────────────────
-//  COLORES (mismos que en CustomerProfileScreen)
-// ─────────────────────────────────────────────
+// Botón guardar
 
-class _OceanRentColors {
-  static const Color navy = Color(0xFF1A2B4A);
-  static const Color teal = Color(0xFF3DBFA8);
-  static const Color tealDark = Color(0xFF2A9D8C);
-  static const Color background = Color(0xFFF2F2F2);
-  static const Color backgroundDim = Color(0xFFE8E8E8);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color fieldBorder = Color(0xFF1A2B4A);
-  static const Color textPrimary = Color(0xFF1A1D23);
-  static const Color textSecondary = Color(0xFF7B8194);
-  static const Color divider = Color(0xFFE4E7EF);
-  static const Color success = Color(0xFF00C07F);
-  static const Color error = Color(0xFFEF4444);
-}
+class _SaveButton extends StatelessWidget {
+  const _SaveButton({required this.isSaving, required this.onPressed});
 
-// ─────────────────────────────────────────────
-//  WIDGETS REUTILIZABLES
-// ─────────────────────────────────────────────
-
-class _Card extends StatelessWidget {
-  final Widget child;
-
-  const _Card({required this.child});
+  final bool isSaving;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: _OceanRentColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.055),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+      height: AppTheme.buttonHeight,
+      child: ElevatedButton(
+        onPressed: isSaving ? null : onPressed,
+        style: AppTheme.accentButtonStyle.copyWith(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return AppTheme.oceanBlue.withValues(alpha: AppTheme.alphaDisabled);
+            }
+            return AppTheme.oceanBlue;
+          }),
+        ),
+        child: isSaving
+            ? const SizedBox(
+                width: AppTheme.loadingSize,
+                height: AppTheme.loadingSize,
+                child: CircularProgressIndicator(
+                  strokeWidth: AppTheme.progressStrokeWidth,
+                  color: AppTheme.white,
+                ),
+              )
+            : Text(
+                'Guardar cambios',
+                style: AppTheme.buttonTextStyle.copyWith(color: AppTheme.white),
+              ),
       ),
-      child: child,
     );
   }
 }

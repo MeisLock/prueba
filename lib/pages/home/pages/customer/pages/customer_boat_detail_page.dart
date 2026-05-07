@@ -3,35 +3,32 @@ import 'package:ocean_rent/core/theme/app_theme.dart';
 import 'package:ocean_rent/models/boat_model.dart';
 import 'package:ocean_rent/pages/home/pages/customer/pages/disponibility_page.dart';
 
-
 // Pantalla de detalle para el cliente.
 // Recibe el barco seleccionado desde el listado y muestra su información completa.
 class CustomerBoatDetailPage extends StatelessWidget {
   final BoatModel boat;
 
-  const CustomerBoatDetailPage({
-    super.key,
-    required this.boat,
-  });
+  const CustomerBoatDetailPage({super.key, required this.boat});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(boat.name),
-      ),
+      appBar: AppBar(title: Text(boat.name)),
       bottomNavigationBar: SafeArea(
         child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: 
-          ElevatedButton(
+          padding: AppTheme.detailBottomButtonPadding,
+          child: ElevatedButton(
+            style: AppTheme.accentButtonStyle,
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => DisponibilityPage(boat: boat)),
-                ), 
-            child:Text('Mirar Disponibilidad', style: TextStyle(color: AppTheme.pearlWhite),),
+            ),
+            child: Text(
+              'Mirar Disponibilidad',
+              style: AppTheme.buttonTextStyle.copyWith(
+                color: AppTheme.pearlWhite,
+              ),
+            ),
           ),
         ),
       ),
@@ -43,67 +40,78 @@ class CustomerBoatDetailPage extends StatelessWidget {
             boat.imageUrl.isNotEmpty
                 ? Image.network(
                     boat.imageUrl,
-                    height: 260,
+                    height: AppTheme.detailImageHeight,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => _DetailImagePlaceholder(name: boat.name),
+                    errorBuilder: (_, _, _) => const _DetailImagePlaceholder(),
                   )
-                : _DetailImagePlaceholder(name: boat.name),
+                : const _DetailImagePlaceholder(),
 
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: AppTheme.cardPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     boat.name,
-                    style: textTheme.headlineSmall?.copyWith(
+                    style: AppTheme.headlineMedium.copyWith(
                       color: AppTheme.deepNavy,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
-
+                  const SizedBox(height: AppTheme.spacing12),
                   Text(
                     boat.category.isEmpty ? 'Sin categoría' : boat.category,
-                    style: textTheme.bodyLarge,
+                    style: AppTheme.bodyLarge.copyWith(
+                      color: AppTheme.textMuted,
+                    ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppTheme.spacing16),
 
                   Text(
                     '${boat.pricePerDay.toStringAsFixed(0)} €/día',
-                    style: textTheme.titleLarge?.copyWith(
-                      color: AppTheme.deepNavy,
-                      fontWeight: FontWeight.bold,
+                    style: AppTheme.titleLarge.copyWith(
+                      color: AppTheme.sunsetGold,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppTheme.spacing16),
 
                   Row(
                     children: [
-                      const Icon(Icons.people_outline),
-                      const SizedBox(width: 8),
-                      Text('Capacidad: ${boat.capacity} personas'),
+                      const Icon(
+                        Icons.people_outline,
+                        color: AppTheme.oceanBlue,
+                        size: AppTheme.iconSizeLarge,
+                      ),
+                      const SizedBox(width: AppTheme.spacing8),
+                      Text(
+                        'Capacidad: ${boat.capacity} personas',
+                        style: AppTheme.bodyMedium.copyWith(
+                          color: AppTheme.deepNavy,
+                        ),
+                      ),
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppTheme.spacing24),
 
                   Text(
                     'Descripción',
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    style: AppTheme.titleMedium.copyWith(
+                      color: AppTheme.deepNavy,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppTheme.spacing8),
 
                   Text(
                     boat.description.isEmpty
                         ? 'Sin descripción disponible.'
                         : boat.description,
-                    style: textTheme.bodyMedium,
+                    style: AppTheme.bodyMedium.copyWith(
+                      color: AppTheme.textMuted,
+                      height: AppTheme.lineHeightInfo,
+                    ),
                   ),
-                ]
+                ],
               ),
             ),
           ],
@@ -115,31 +123,26 @@ class CustomerBoatDetailPage extends StatelessWidget {
 
 // Placeholder reutilizado cuando no existe imagen o la URL no carga correctamente.
 class _DetailImagePlaceholder extends StatelessWidget {
-  final String name;
-
-  const _DetailImagePlaceholder({required this.name});
+  const _DetailImagePlaceholder();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 260,
+      height: AppTheme.detailImageHeight,
       width: double.infinity,
-      color: AppTheme.deepNavy.withValues(alpha: 0.08),
+      color: AppTheme.deepNavy.withValues(alpha: AppTheme.alphaSoft),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.directions_boat_filled_outlined,
-            size: 56,
+            size: AppTheme.detailPlaceholderIconSize,
             color: AppTheme.deepNavy,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppTheme.spacing8),
           Text(
             'Imagen no disponible',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppTheme.deepNavy,
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTheme.titleMedium.copyWith(color: AppTheme.deepNavy),
           ),
         ],
       ),

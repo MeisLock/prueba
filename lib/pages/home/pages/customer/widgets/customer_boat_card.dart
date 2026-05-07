@@ -6,95 +6,80 @@ import 'package:ocean_rent/pages/home/pages/customer/pages/customer_boat_detail_
 class CustomerBoatCard extends StatelessWidget {
   final BoatModel boat;
 
-  const CustomerBoatCard({
-    super.key,
-    required this.boat,
-  });
+  const CustomerBoatCard({super.key, required this.boat});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return InkWell(
-      borderRadius: BorderRadius.circular(18),
-
+      borderRadius: AppTheme.borderRadiusCard,
       // Al pulsar la tarjeta se abre la pantalla de detalle del barco.
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => CustomerBoatDetailPage(boat: boat),
-          ),
+          MaterialPageRoute(builder: (_) => CustomerBoatDetailPage(boat: boat)),
         );
       },
 
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
+        margin: AppTheme.cardBottomMargin,
+        decoration: AppTheme.cardDecoration(
+          color: AppTheme.surface,
+          radius: AppTheme.radiusCard,
           border: Border.all(
-            color: AppTheme.deepNavy.withValues(alpha: 0.08),
+            color: AppTheme.deepNavy.withValues(alpha: AppTheme.alphaSoft),
           ),
+          boxShadow: AppTheme.softShadow(),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(18),
-              ),
+              borderRadius: AppTheme.borderRadiusCardTop,
               child: boat.imageUrl.isNotEmpty
                   ? Image.network(
                       boat.imageUrl,
-                      height: 170,
+                      height: AppTheme.customerBoatImageHeight,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => _BoatImagePlaceholder(
-                        name: boat.name,
-                      ),
+                      errorBuilder: (_, _, _) =>
+                          _BoatImagePlaceholder(name: boat.name),
                     )
                   : _BoatImagePlaceholder(name: boat.name),
             ),
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: AppTheme.compactCardPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     boat.name,
-                    style: textTheme.titleLarge?.copyWith(
+                    style: AppTheme.titleLarge.copyWith(
                       color: AppTheme.deepNavy,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: AppTheme.spacing10),
                   Row(
                     children: [
                       Icon(
                         Icons.directions_boat_outlined,
-                        size: 18,
+                        size: AppTheme.iconSizeMedium,
                         color: AppTheme.oceanBlue,
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: AppTheme.spacing6),
                       Expanded(
                         child: Text(
-                          boat.category.isEmpty ? 'Sin categoría' : boat.category,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey.shade700,
+                          boat.category.isEmpty
+                              ? 'Sin categoría'
+                              : boat.category,
+                          style: AppTheme.bodyMedium.copyWith(
+                            color: AppTheme.textMuted,
                           ),
                         ),
                       ),
                       Text(
                         '${boat.pricePerDay.toStringAsFixed(0)} €/día',
-                        style: textTheme.titleMedium?.copyWith(
+                        style: AppTheme.titleMedium.copyWith(
                           color: AppTheme.deepNavy,
                           fontWeight: FontWeight.w700,
                         ),
@@ -119,25 +104,25 @@ class _BoatImagePlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 170,
+      height: AppTheme.customerBoatImageHeight,
       width: double.infinity,
-      color: AppTheme.deepNavy.withValues(alpha: 0.08),
+      color: AppTheme.deepNavy.withValues(alpha: AppTheme.alphaSoft),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.directions_boat_filled_outlined,
-            size: 42,
+            size: AppTheme.emptyStateIconSize,
             color: AppTheme.deepNavy,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppTheme.spacing8),
           Text(
             name,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppTheme.deepNavy,
-                  fontWeight: FontWeight.w600,
-                ),
+            style: AppTheme.bodyLarge.copyWith(
+              color: AppTheme.deepNavy,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

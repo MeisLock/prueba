@@ -1,7 +1,7 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:ocean_rent/models/user_model.dart';
-import 'package:ocean_rent/services/firebase_storage_service.dart';
-import 'package:ocean_rent/services/user_service.dart';
+import 'package:ocean_rent/services/storage/firebase_storage_service.dart';
+import 'package:ocean_rent/services/user/user_service.dart';
 
 class UserRepository {
   UserRepository(this._userService, this._storageService);

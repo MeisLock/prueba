@@ -30,14 +30,8 @@ class CustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 4,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: AppTheme.borderRadiusInput,
+        boxShadow: AppTheme.softShadow(alpha: AppTheme.alphaBorder),
       ),
       child: TextField(
         controller: controller,
@@ -47,19 +41,21 @@ class CustomTextField extends StatelessWidget {
         obscureText: obscureText,
         onSubmitted: onSubmitted,
         textAlign: TextAlign.left,
-        style: const TextStyle(color: Colors.black),
+        style: AppTheme.fieldTextStyle,
         decoration: InputDecoration(
           hintText: hintText,
+          hintStyle: AppTheme.helperTextStyle,
           filled: true,
           fillColor: AppTheme.pearlWhite,
           suffixIcon: suffixIcon,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: AppTheme.deepNavy, width: 1.9),
+          contentPadding: AppTheme.inputContentPadding,
+          enabledBorder: AppTheme.outlineBorder(
+            AppTheme.deepNavy,
+            width: AppTheme.borderWidthInput,
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: AppTheme.oceanBlue, width: 1.9),
+          focusedBorder: AppTheme.outlineBorder(
+            AppTheme.oceanBlue,
+            width: AppTheme.borderWidthInput,
           ),
         ),
       ),

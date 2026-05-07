@@ -1,5 +1,5 @@
 import 'package:image_picker/image_picker.dart';
-import 'package:ocean_rent/services/firebase_storage_service.dart';
+import 'package:ocean_rent/services/storage/firebase_storage_service.dart';
 
 class StorageRepository {
   StorageRepository(this._firebaseStorageService);

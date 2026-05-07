@@ -19,34 +19,18 @@ class AdminSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppTheme.deepNavy.withValues(alpha: 0.08)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      padding: AppTheme.adminWidgetCardPadding,
+      decoration: AppTheme.adminCardDecoration(),
       child: Row(
         children: [
           Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: color, size: 26),
+            width: AppTheme.summaryIconBoxSize,
+            height: AppTheme.summaryIconBoxSize,
+            decoration: AppTheme.adminIconBoxDecoration(color),
+            child: Icon(icon, color: color, size: AppTheme.iconSize2xl),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppTheme.spacing12),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -56,30 +40,30 @@ class AdminSummaryCard extends StatelessWidget {
                   value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.titleLarge?.copyWith(
+                  style: AppTheme.titleLarge.copyWith(
                     color: AppTheme.deepNavy,
-                    fontSize: 22,
+                    fontSize: AppTheme.fontSize22,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: AppTheme.spacing2),
                 Text(
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodySmall?.copyWith(
+                  style: AppTheme.bodySmall.copyWith(
                     color: AppTheme.deepNavy,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: AppTheme.spacing2),
                 Text(
                   subtitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: Colors.grey.shade600,
-                    fontSize: 12,
+                  style: AppTheme.bodySmall.copyWith(
+                    color: AppTheme.textMuted,
+                    fontSize: AppTheme.fontSize12,
                   ),
                 ),
               ],

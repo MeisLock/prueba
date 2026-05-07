@@ -52,20 +52,24 @@ class _AdminCalendarPageState extends ConsumerState<AdminCalendarPage> {
   @override
   Widget build(BuildContext context) {
     final boatsAsync = ref.watch(boatsStreamProvider);
-    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(title: const Text('Calendario de flota')),
       body: boatsAsync.when(
-        loading: () =>
-            Center(child: CircularProgressIndicator(color: AppTheme.deepNavy)),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            color: AppTheme.oceanBlue,
+            strokeWidth: AppTheme.borderWidthMedium,
+          ),
+        ),
         error: (error, _) => Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: AppTheme.screenPadding,
             child: Text(
               'Error cargando barcos:\n$error',
               textAlign: TextAlign.center,
-              style: textTheme.bodyMedium?.copyWith(
+              style: AppTheme.bodyLarge.copyWith(
                 color: AppTheme.alertRed,
                 fontWeight: FontWeight.w600,
               ),
@@ -76,11 +80,11 @@ class _AdminCalendarPageState extends ConsumerState<AdminCalendarPage> {
           if (boats.isEmpty) {
             return Center(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: AppTheme.screenPadding,
                 child: Text(
                   'No hay barcos registrados para mostrar en el calendario.',
                   textAlign: TextAlign.center,
-                  style: textTheme.bodyLarge?.copyWith(
+                  style: AppTheme.bodyLarge.copyWith(
                     color: AppTheme.deepNavy,
                     fontWeight: FontWeight.w600,
                   ),
@@ -98,81 +102,71 @@ class _AdminCalendarPageState extends ConsumerState<AdminCalendarPage> {
           _selectedBoatId ??= selectedBoat.id;
 
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: AppTheme.listPadding,
             children: [
               Text(
                 'Selecciona un barco',
-                style: textTheme.titleMedium?.copyWith(
+                style: AppTheme.titleMedium.copyWith(
                   color: AppTheme.deepNavy,
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppTheme.spacing8),
               DropdownButtonFormField<String>(
                 initialValue: selectedBoat.id,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(
-                      color: AppTheme.deepNavy.withValues(alpha: 0.25),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: AppTheme.oceanBlue,
-                      width: 1.8,
-                    ),
-                  ),
+                decoration: AppTheme.inputDecoration(
+                  labelText: 'Barco',
+                  icon: Icons.directions_boat_outlined,
+                ),
+                dropdownColor: AppTheme.surface,
+                borderRadius: AppTheme.borderRadiusInput,
+                style: AppTheme.fieldTextStyle.copyWith(
+                  color: AppTheme.deepNavy,
                 ),
                 items: boats.map((boat) {
                   return DropdownMenuItem<String>(
                     value: boat.id,
-                    child: Text(boat.name),
+                    child: Text(
+                      boat.name,
+                      style: AppTheme.bodyMedium.copyWith(
+                        color: AppTheme.deepNavy,
+                      ),
+                    ),
                   );
                 }).toList(),
                 onChanged: _changeSelectedBoat,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppTheme.spacing20),
               Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
+                padding: AppTheme.compactCardPadding,
+                decoration: AppTheme.cardDecoration(
+                  color: AppTheme.surface,
                   border: Border.all(
-                    color: AppTheme.deepNavy.withValues(alpha: 0.08),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+                    color: AppTheme.deepNavy.withValues(
+                      alpha: AppTheme.alphaSoft,
                     ),
-                  ],
+                  ),
+                  boxShadow: AppTheme.softShadow(),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       selectedBoat.name,
-                      style: textTheme.headlineSmall?.copyWith(
+                      style: AppTheme.headlineMedium.copyWith(
                         color: AppTheme.deepNavy,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppTheme.spacing4),
                     Text(
                       'Selecciona fechas para consultar o preparar bloqueos de disponibilidad.',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: Colors.grey.shade600,
+                      style: AppTheme.bodySmall.copyWith(
+                        color: AppTheme.textMuted,
+                        height: AppTheme.lineHeightRegular,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppTheme.spacing16),
                     TableCalendar(
                       locale: 'es_ES',
                       startingDayOfWeek: StartingDayOfWeek.monday,
@@ -195,105 +189,50 @@ class _AdminCalendarPageState extends ConsumerState<AdminCalendarPage> {
                           _focusedDay = focusedDay;
                         });
                       },
-                      headerStyle: HeaderStyle(
-                        formatButtonVisible: false,
-                        titleCentered: true,
-                        titleTextStyle: textTheme.titleLarge!.copyWith(
-                          color: AppTheme.deepNavy,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        leftChevronIcon: const Icon(
-                          Icons.chevron_left,
-                          color: AppTheme.deepNavy,
-                        ),
-                        rightChevronIcon: const Icon(
-                          Icons.chevron_right,
-                          color: AppTheme.deepNavy,
-                        ),
-                      ),
-                      daysOfWeekStyle: DaysOfWeekStyle(
-                        weekdayStyle: textTheme.bodySmall!.copyWith(
-                          color: AppTheme.deepNavy,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        weekendStyle: textTheme.bodySmall!.copyWith(
-                          color: AppTheme.oceanBlue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      calendarStyle: CalendarStyle(
-                        todayDecoration: BoxDecoration(
-                          color: AppTheme.oceanBlue.withValues(alpha: 0.35),
-                          shape: BoxShape.circle,
-                        ),
-                        todayTextStyle: const TextStyle(
-                          color: AppTheme.deepNavy,
-                        ),
-                        rangeStartDecoration: const BoxDecoration(
-                          color: AppTheme.deepNavy,
-                          shape: BoxShape.circle,
-                        ),
-                        rangeEndDecoration: const BoxDecoration(
-                          color: AppTheme.deepNavy,
-                          shape: BoxShape.circle,
-                        ),
-                        rangeHighlightColor: AppTheme.oceanBlue.withValues(
-                          alpha: 0.18,
-                        ),
-                        defaultTextStyle: const TextStyle(
-                          color: AppTheme.deepNavy,
-                        ),
-                        weekendTextStyle: const TextStyle(
-                          color: AppTheme.oceanBlue,
-                        ),
-                        outsideDaysVisible: false,
-                      ),
+                      headerStyle: AppTheme.calendarHeaderStyle,
+                      daysOfWeekStyle: AppTheme.calendarDaysOfWeekStyle,
+                      calendarStyle: AppTheme.calendarStyle,
                     ),
                   ],
                 ),
               ),
               if (_rangeStart != null) ...[
-                const SizedBox(height: 18),
+                const SizedBox(height: AppTheme.spacing18),
                 Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.deepNavy.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppTheme.deepNavy.withValues(alpha: 0.12),
-                    ),
-                  ),
+                  padding: AppTheme.compactCardPadding,
+                  decoration: AppTheme.infoBannerDecoration(AppTheme.deepNavy),
                   child: Text(
                     _rangeEnd == null
                         ? 'Fecha seleccionada: ${_formatDate(_rangeStart!)}'
                         : 'Rango seleccionado: del ${_formatDate(_rangeStart!)} al ${_formatDate(_rangeEnd!)}',
-                    style: textTheme.bodyLarge?.copyWith(
+                    style: AppTheme.bodyLarge.copyWith(
                       color: AppTheme.deepNavy,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
               ],
-              const SizedBox(height: 18),
+              const SizedBox(height: AppTheme.spacing18),
               ElevatedButton.icon(
                 onPressed: _saveSelectedRange,
-                icon: const Icon(Icons.save_outlined),
-                label: const Text('Guardar selección'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.deepNavy,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(52),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                style: AppTheme.fullWidthPrimaryButtonStyle,
+                icon: const Icon(
+                  Icons.save_outlined,
+                  size: AppTheme.iconSizeLarge,
+                ),
+                label: Text(
+                  'Guardar selección',
+                  style: AppTheme.buttonTextStyle.copyWith(
+                    color: AppTheme.pearlWhite,
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppTheme.spacing12),
               Text(
                 'Nota: esta pantalla queda preparada para conectarse después con bookings y maintenance_blocks.',
-                style: textTheme.bodySmall?.copyWith(
-                  color: Colors.grey.shade600,
-                  height: 1.35,
+                style: AppTheme.bodySmall.copyWith(
+                  color: AppTheme.textMuted,
+                  height: AppTheme.lineHeightRegular,
                 ),
               ),
             ],
