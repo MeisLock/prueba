@@ -39,17 +39,17 @@ class OnboardingCategoryPageState extends State<OnboardingCategoryPage>{
                 CustomCard(
                   title: 'Velero', 
                   description: 'Experiencia de navegación relajada',
-                  imagePath: 'assets/icons/veleroOriginal', 
+                  imagePath: 'assets/icons/veleroOriginal.svg', 
                   isSelected: selected.contains('velero'), 
                   onTap:() => setState(() {
                     selected.contains('velero') ? selected.remove('velero') : selected.add('velero');
                   })
                 ),
                 const SizedBox(height: 8),
-                /*CustomCard(
+                CustomCard(
                   title: 'Lancha', 
                   description: 'Rápido, para excursiones cortas', 
-                  imagePath: '', 
+                  imagePath: 'assets/icons/lanchaModificada.svg', 
                   isSelected: selected.contains('lancha'), 
                   onTap:() => setState(() {
                     selected.contains('lancha') ? selected.remove('lancha') : selected.add('lancha');
@@ -59,17 +59,18 @@ class OnboardingCategoryPageState extends State<OnboardingCategoryPage>{
                 CustomCard(
                   title: 'Catamarán', 
                   description: 'Ideal para grupos',
-                  imagePath: '', 
+                  imagePath: 'assets/icons/catamaranModificado.svg', 
                   isSelected: selected.contains('catamaran'), 
                   onTap:() => setState(() {
                     selected.contains('catamaran') ? selected.remove('catamaran') : selected.add('catamaran');
                   })
                 ),
+                
                 const SizedBox(height: 8),
                 CustomCard(
                   title: 'Yate a motor', 
                   description: 'Rápido y cómodo', 
-                  imagePath: '', 
+                  imagePath: 'assets/icons/yateModificado.svg', 
                   isSelected: selected.contains('yate'), 
                   onTap:() => setState(() {
                     selected.contains('yate') ? selected.remove('yate') : selected.add('yate');
@@ -79,36 +80,29 @@ class OnboardingCategoryPageState extends State<OnboardingCategoryPage>{
                 CustomCard(
                   title: 'Jet Ski', 
                   description: 'Ágil y emocionante', 
-                  imagePath: '', 
+                  imagePath: 'assets/icons/jetskiModificado.svg', 
                   isSelected: selected.contains('jetski'), 
                   onTap:() => setState(() {
                     selected.contains('jetski') ? selected.remove('jetski') : selected.add('jetski');
                   })
-                ),*/
-                SizedBox(height: 60),
+                ),
+                SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   height: 52,
-                  
                   child: ElevatedButton(
                     onPressed:() => widget.onNext(selected),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.oceanBlue,
                       foregroundColor: AppTheme.pearlWhite,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
                     ),
-                    child: Text(
-                      'Siguiente', style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: AppTheme.pearlWhite)
+                    child: Text('Siguiente', style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: AppTheme.pearlWhite)
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
                 Container(
                   width: double.infinity,
                   height: 52,

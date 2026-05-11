@@ -40,8 +40,8 @@ class CustomCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               child: SvgPicture.asset(
                 imagePath,
-                width: 120,
-                height: 120,
+                width: 64,
+                height: 64,
                 fit: BoxFit.cover,
                 colorFilter: isSelected? null : ColorFilter.mode(const Color.fromARGB(255, 214, 214, 214), BlendMode.saturation),
               ),

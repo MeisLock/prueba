@@ -27,6 +27,7 @@ class _BoatFormPageState extends State<BoatFormPage> {
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _imageUrlController = TextEditingController();
+  final _portNameController = TextEditingController();
 
   final List<String> _boatTypes = const [
     'lancha',
@@ -58,6 +59,7 @@ class _BoatFormPageState extends State<BoatFormPage> {
       _priceController.text = boat.pricePerDay.toString();
       _descriptionController.text = boat.description;
       _imageUrlController.text = boat.imageUrl;
+      _portNameController.text = boat.portName;
     }
 
     _imageUrlController.addListener(() {
@@ -74,6 +76,7 @@ class _BoatFormPageState extends State<BoatFormPage> {
     _priceController.dispose();
     _descriptionController.dispose();
     _imageUrlController.dispose();
+    _portNameController.dispose();
     super.dispose();
   }
 
@@ -181,7 +184,7 @@ class _BoatFormPageState extends State<BoatFormPage> {
         _priceController.text.trim().replaceAll(',', '.'),
       );
       final description = _descriptionController.text.trim();
-
+      final portName = _portNameController.text.trim();
       final imageUrl = finalImageUrl.isNotEmpty
           ? finalImageUrl
           : _imageUrlController.text.trim();
@@ -195,6 +198,7 @@ class _BoatFormPageState extends State<BoatFormPage> {
           pricePerDay: price,
           description: description,
           imageUrl: imageUrl,
+          portName: portName,
         );
       } else {
         await BoatService.instance.createBoat(
@@ -204,6 +208,7 @@ class _BoatFormPageState extends State<BoatFormPage> {
           pricePerDay: price,
           description: description,
           imageUrl: imageUrl,
+          portName: portName,
         );
       }
 
@@ -454,6 +459,16 @@ class _BoatFormPageState extends State<BoatFormPage> {
                   icon: Icons.people_outline,
                 ),
                 validator: _validateCapacity,
+              ),
+              const SizedBox(height: AppTheme.spacing12),
+              TextFormField(
+                controller: _portNameController,
+                style: AppTheme.fieldTextStyle,
+                decoration: _inputDecoration(
+                  'Puerto / ubicación',
+                  icon: Icons.location_on_outlined,
+                ),
+                validator: _validateRequired,
               ),
               const SizedBox(height: AppTheme.spacing12),
               TextFormField(

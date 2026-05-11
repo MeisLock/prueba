@@ -60,23 +60,36 @@ class CustomerBoatCard extends StatelessWidget {
                   ),
                   const SizedBox(height: AppTheme.spacing10),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.directions_boat_outlined,
-                        size: AppTheme.iconSizeMedium,
-                        color: AppTheme.oceanBlue,
-                      ),
-                      const SizedBox(width: AppTheme.spacing6),
                       Expanded(
-                        child: Text(
-                          boat.category.isEmpty
-                              ? 'Sin categoría'
-                              : boat.category,
-                          style: AppTheme.bodyMedium.copyWith(
-                            color: AppTheme.textMuted,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _BoatInfoItem(
+                              icon: Icons.directions_boat_outlined,
+                              label: _formatBoatCategory(boat.category),
+                            ),
+                            const SizedBox(height: AppTheme.spacing6),
+                            _BoatInfoItem(
+                              icon: Icons.location_on_outlined,
+                              label: boat.portName.trim().isEmpty
+                                  ? 'Sin ubicación'
+                                  : boat.portName.trim(),
+                            ),
+                            const SizedBox(height: AppTheme.spacing6),
+                            _BoatInfoItem(
+                              icon: Icons.people_outline,
+                              label: boat.capacity <= 0
+                                  ? 'Sin capacidad'
+                                  : boat.capacity == 1
+                                  ? '1 persona'
+                                  : '${boat.capacity} personas',
+                            ),
+                          ],
                         ),
                       ),
+                      const SizedBox(width: AppTheme.spacing10),
                       Text(
                         '${boat.pricePerDay.toStringAsFixed(0)} €/día',
                         style: AppTheme.titleMedium.copyWith(
@@ -92,6 +105,52 @@ class CustomerBoatCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+String _formatBoatCategory(String category) {
+  final normalizedCategory = category.trim().toLowerCase();
+
+  switch (normalizedCategory) {
+    case 'lancha':
+      return 'Lancha';
+    case 'semirigida':
+      return 'Semirrígida';
+    case 'velero':
+      return 'Velero';
+    case 'yate':
+      return 'Yate';
+    case 'catamaran':
+      return 'Catamarán';
+    case 'jetski':
+      return 'Jet Ski';
+    default:
+      return category.trim().isEmpty ? 'Sin categoría' : category.trim();
+  }
+}
+
+class _BoatInfoItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _BoatInfoItem({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: AppTheme.iconSizeMedium, color: AppTheme.oceanBlue),
+        const SizedBox(width: AppTheme.spacing6),
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTheme.bodyMedium.copyWith(color: AppTheme.textMuted),
+          ),
+        ),
+      ],
     );
   }
 }

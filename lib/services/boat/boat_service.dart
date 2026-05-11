@@ -26,6 +26,7 @@ class BoatService {
     required double pricePerDay,
     required String description,
     required String imageUrl,
+    required String portName,
   }) async {
     await _boatsCollection.add({
       'name': name.trim(),
@@ -34,6 +35,7 @@ class BoatService {
       'price_per_day': pricePerDay,
       'description': description.trim(),
       'imageUrl': imageUrl.trim(),
+      'port_name': portName.trim(),
     });
   }
 
@@ -45,6 +47,7 @@ class BoatService {
     required double pricePerDay,
     required String description,
     required String imageUrl,
+    required String portName,
   }) async {
     await _boatsCollection.doc(id).update({
       'name': name.trim(),
@@ -53,6 +56,7 @@ class BoatService {
       'price_per_day': pricePerDay,
       'description': description.trim(),
       'imageUrl': imageUrl.trim(),
+      'port_name': portName.trim(),
     });
   }
 

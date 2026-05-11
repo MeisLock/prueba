@@ -43,7 +43,7 @@ class _OnboardingPlacePageState extends State<OnboardingPlacePage> {
                 onTap: () => setState(() {
                   selected.contains('marbella')? selected.remove('marbella') : selected.add('marbella');
                 }),
-                imagePath: ''
+                imagePath: 'assets/icons/playa.svg'
               ),
               const SizedBox(height: 8),
               CustomCard(
@@ -53,7 +53,7 @@ class _OnboardingPlacePageState extends State<OnboardingPlacePage> {
                 onTap: () => setState(() {
                   selected.contains('malaga')? selected.remove('malaga') : selected.add('malaga');
                 }),
-                imagePath: ''
+                imagePath: 'assets/icons/playa.svg'
               ),
               const SizedBox(height: 8),
               CustomCard(
@@ -63,9 +63,9 @@ class _OnboardingPlacePageState extends State<OnboardingPlacePage> {
                 onTap: () => setState(() {
                   selected.contains('cabo_canaveral')? selected.remove('cabo_canaveral') : selected.add('cabo_canaveral');
                 }),
-                imagePath: ''
+                imagePath: 'assets/icons/playa.svg'
               ),
-              const SizedBox(height: 60),
+              const SizedBox(height: 224),
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -77,9 +77,7 @@ class _OnboardingPlacePageState extends State<OnboardingPlacePage> {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
                   ),
-                  child: Text(
-                    'Empezar',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: AppTheme.pearlWhite),
+                  child: Text('Explorar Barcos', style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: AppTheme.pearlWhite),
                   ),
                 ),
               ),
@@ -92,12 +90,14 @@ class _OnboardingPlacePageState extends State<OnboardingPlacePage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ElevatedButton(
-                  onPressed: () => AppNavigator.goToExploreBoats(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.pearlWhite,
-                    foregroundColor: AppTheme.deepNavy,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
+                    onPressed: () => AppNavigator.goToExploreBoats(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.pearlWhite,
+                      foregroundColor: AppTheme.deepNavy,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   child: Text('Saltar', style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: AppTheme.deepNavy)
                   ),

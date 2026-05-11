@@ -50,6 +50,15 @@ InputDecoration _fieldDeco({
 }) =>
     AppTheme.inputDecoration(labelText: label, icon: icon, readOnly: readOnly);
 
+String _formatBirthDate(DateTime? birthDate) {
+  if (birthDate == null) return 'No indicada';
+
+  final day = birthDate.day.toString().padLeft(2, '0');
+  final month = birthDate.month.toString().padLeft(2, '0');
+  final year = birthDate.year.toString();
+
+  return '$day/$month/$year';
+}
 // SCREEN PRINCIPAL
 
 class CustomerProfileScreen extends ConsumerStatefulWidget {
@@ -66,6 +75,7 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen>
   final _nameCtrl = TextEditingController();
   final _surnameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
+  final _birthDateCtrl = TextEditingController();
 
   UserModel? _profile;
   bool _isLoading = true;
@@ -95,6 +105,7 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen>
     _nameCtrl.dispose();
     _surnameCtrl.dispose();
     _emailCtrl.dispose();
+    _birthDateCtrl.dispose();
     _fadeCtrl.dispose();
     super.dispose();
   }
@@ -119,6 +130,7 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen>
         _nameCtrl.text = profile.name;
         _surnameCtrl.text = profile.surname;
         _emailCtrl.text = profile.email;
+        _birthDateCtrl.text = _formatBirthDate(profile.birthDate);
         _licenseStatus = _statusFromString(
           profile.nauticalLicense?.status ?? 'none',
         );
@@ -161,7 +173,7 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen>
       final uid = ref.read(authNotifierProvider).currentUser!.uid;
       final repo = ref.read(userRepositoryProvider);
 
-      //  guardao solo el nombre del archivo y actualizo Firestore directamente
+      //  guardado solo el nombre del archivo y actualizo Firestore directamente
       await repo.updateNauticalLicense(
         uid: uid,
         type: _licenseType,
@@ -253,6 +265,7 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen>
                 nameCtrl: _nameCtrl,
                 surnameCtrl: _surnameCtrl,
                 emailCtrl: _emailCtrl,
+                birthDateCtrl: _birthDateCtrl,
               ),
               const SizedBox(height: AppTheme.spacing28),
               const _SectionLabel('Titulación Náutica'),
@@ -377,9 +390,10 @@ class _PersonalDataCard extends StatelessWidget {
     required this.nameCtrl,
     required this.surnameCtrl,
     required this.emailCtrl,
+    required this.birthDateCtrl,
   });
 
-  final TextEditingController nameCtrl, surnameCtrl, emailCtrl;
+  final TextEditingController nameCtrl, surnameCtrl, emailCtrl, birthDateCtrl;
 
   static String? _required(String? v) =>
       (v == null || v.trim().isEmpty) ? 'Campo requerido' : null;
@@ -413,6 +427,13 @@ class _PersonalDataCard extends StatelessWidget {
             if (!v.contains('@')) return 'Email inválido';
             return null;
           },
+        ),
+        const SizedBox(height: AppTheme.spacing20),
+        _ProfileField(
+          controller: birthDateCtrl,
+          label: 'Fecha de nacimiento',
+          icon: Icons.cake_outlined,
+          readOnly: true,
         ),
       ],
     ),
@@ -526,7 +547,7 @@ class _NauticalCard extends StatelessWidget {
           // FIX 2: Añadido isExpanded: true y overflow: TextOverflow.ellipsis
           // para evitar RenderFlex overflow con textos largos en pantallas pequeñas.
           DropdownButtonFormField<String>(
-            value: licenseType,
+            initialValue: licenseType,
             isExpanded: true,
             decoration: _fieldDeco(
               label: 'Tipo de titulación',
